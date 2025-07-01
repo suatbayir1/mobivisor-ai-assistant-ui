@@ -1,7 +1,7 @@
 'use client';
 
-import MessageList from '@/components/MessageList';
-import ChatInput from '@/components/ChatInput';
+import MessageList from '@/shared/components/MessageList';
+import ChatInput from '@/shared/components/ChatInput';
 import { useChat } from '@/features/chat/hooks/useChat'; 
 
 export default function ChatPage() {

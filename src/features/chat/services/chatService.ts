@@ -1,5 +1,6 @@
 import { ChatMessage, Source } from "@/features/chat/types";
-import { apiFetch } from "@/lib/fetcher";
+import { SERVICE } from "@/shared/constants/service";
+import { apiFetch } from "@/shared/lib/fetcher";
 
 export async function sendChatMessage(messages: ChatMessage[]): Promise<Omit<ChatMessage, 'role'>> {
   const lastUserMessage: ChatMessage = messages[messages.length - 1];
@@ -11,6 +12,7 @@ export async function sendChatMessage(messages: ChatMessage[]): Promise<Omit<Cha
   };
 
   const data = await apiFetch<{ response: string; sources: Source[] }>(
+    SERVICE.CHAT,
     '/api/v1/document/query',
     {
       method: 'POST',

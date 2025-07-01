@@ -16,7 +16,7 @@ type PdfState = {
 const parseSource = (source: Source) => {
   const [file_path, pageStr, partStr] = source.id.split(':');
   const file = file_path.split("/")[1];
-  const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/static/${file}`;
+  const url = `${process.env.NEXT_PUBLIC_CHAT_API_BASE_URL}/static/${file}`;
 
   return {
     file,
