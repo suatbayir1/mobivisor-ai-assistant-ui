@@ -2,7 +2,7 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 COPY package*.json ./
-COPY .env.local .env.local
+COPY .env .env
 
 # ---------- 2. DEVELOPMENT STAGE ----------
 FROM base AS dev

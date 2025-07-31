@@ -17,6 +17,7 @@ export function useChat() {
       content: response.content, 
       sources: response.sources 
     }]);
+
     setIsLoading(false);
   };
 

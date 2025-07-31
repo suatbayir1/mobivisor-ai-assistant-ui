@@ -11,15 +11,20 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
+                sh "cp .env.example .env"
             }
         }
 
         stage('Install & Lint') {
             steps {
-                sh '''
-                    npm install --legacy-peer-deps
-                    npm run lint || true
-                '''
+                script {
+                    sh '''
+                        docker run --rm -v $PWD:/app -w /app node:20 bash -c "
+                            npm install --legacy-peer-deps &&
+                            npm run lint || true
+                        "
+                    '''
+                }
             }
         }
 

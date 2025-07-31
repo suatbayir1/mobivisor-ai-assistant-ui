@@ -2,23 +2,32 @@
 
 import { useState } from "react";
 import { PlusIcon, SearchIcon } from "lucide-react";
+import { useChatSidebar } from "@/features/chat/hooks/useChatSidebar";
+import { useSelectedChat } from '@/features/chat/stores/useSelectedChat';
+import { useAuthStore } from "@/features/auth/store/useAuthStore";
+import { createChat } from "@/features/chat/services/createChat";
 
 export default function ChatSidebar() {
     const [search, setSearch] = useState<string>('');
-    const [chats, setChats] = useState<string[]>([
-        'Chat with PDF', 'Product Ideas', 'Code Review'
-    ]);
-    const [activeChatIndex, setActiveChatIndex] = useState<number | null>(null);
+    const { chats, isLoading, error, fetchChats } = useChatSidebar();
+    const user = useAuthStore((state) => state.user);
 
     const filteredChats = chats
         .map((chat, idx) => ({ chat, idx }))
-        .filter(({ chat }) => chat.toLowerCase().includes(search.toLowerCase()));
+        .filter(({ chat }) => chat.title.toLowerCase().includes(search.toLowerCase()));
 
-    const handleNewChat = () => {
-        const newChat = `New Chat ${chats.length + 1}`;
-        setChats([newChat, ...chats]);
-        setActiveChatIndex(0);
+    const handleNewChat = async () => {
+        if (!user?.uuid) return;
+
+        const title = `New Conversation ${chats.length + 1}`;
+        const newChat = await createChat(user.uuid, title);
+
+        setChatUuid(newChat.uuid);
+
+        await fetchChats();
     };
+
+    const { chatUuid: selectedChatUuid, setChatUuid } = useSelectedChat();
 
     return (
         <aside className="h-full flex flex-col bg-[#1a1a1c] text-white border-r border-gray-800 p-4 w-64">
@@ -48,18 +57,22 @@ export default function ChatSidebar() {
 
             {/* Chat List */}
             <div className="flex-1 overflow-y-auto space-y-1 custom-scrollbar">
-                {filteredChats.length > 0 ? (
-                    filteredChats.map(({ chat, idx }) => (
+                {isLoading ? (
+                    <p className="text-sm text-gray-400">Loading...</p>
+                ) : error ? (
+                    <p className="text-sm text-red-400">{error}</p>
+                ) : filteredChats.length > 0 ? (
+                    filteredChats.map(({ chat }) => (
                         <button
-                            key={idx}
-                            onClick={() => setActiveChatIndex(idx)}
+                            key={chat.uuid}
+                            onClick={() => setChatUuid(chat.uuid)}
                             className={`w-full text-left px-3 py-2 rounded transition cursor-pointer ${
-                                idx === activeChatIndex
+                                chat.uuid === selectedChatUuid
                                     ? "bg-[#2f2f32] text-white font-semibold"
                                     : "hover:bg-[#2a2a2d]"
                             }`}
                         >
-                            {chat}
+                            {chat.title}
                         </button>
                     ))
                 ) : (

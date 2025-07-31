@@ -1,3 +1,4 @@
+import { ArrowUpIcon } from "lucide-react";
 import { useState } from "react";
 
 interface ChatInputProps {
@@ -22,8 +23,8 @@ export default function ChatInput({ onSend }: ChatInputProps) {
                 placeholder="Ask anything..."
                 className="flex-1 p-3 rounded-md bg-[#2c2c2f] text-white placeholder-gray-400 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                Send
+            <button type="submit" className="px-4 py-2 text-black transition cursor-pointer rounded-full bg-white text-black hover:bg-gray-200 transition shadow-md disabled:opacity-50">
+                <ArrowUpIcon className="w-5 h-5" />
             </button>
         </form>
     )

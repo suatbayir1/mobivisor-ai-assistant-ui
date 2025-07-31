@@ -3,6 +3,7 @@ import { usePdfStore } from '../stores/pdfStore';
 import { useState, useRef, useEffect } from 'react';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import { fuzzyMatch } from '@/utils/fuzzyMatch';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -10,7 +11,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 export default function PDFDrawer() {
-    const { isOpen, url, page, closePdf } = usePdfStore();
+    const { isOpen, url, page, text, closePdf } = usePdfStore();
     const [numPages, setNumPages] = useState<number | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -87,9 +88,12 @@ export default function PDFDrawer() {
                                         onRenderSuccess={() => onPageRenderSuccess(index + 1)}
                                         scale={1.5}
                                         customTextRenderer={
-                                            pageNumber === page
-                                            ? (textItem) => `<mark>${textItem.str}</mark>`
-                                            : undefined
+                                            (textItem) => {
+                                                if (pageNumber === page && text && fuzzyMatch(text, textItem.str)) {
+                                                    return `<mark>${textItem.str}</mark>`;
+                                                }
+                                                return textItem.str;
+                                            }
                                         }
                                     />
                                 )
